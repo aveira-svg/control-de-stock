@@ -1,16 +1,23 @@
-// Artículos únicos a prestar
-const equipos = [
-    { id: 'presentador-1', nombre: 'Presentador 1', estado: 'disponible', lugar: null },
-    { id: 'presentador-2', nombre: 'Presentador 2', estado: 'disponible', lugar: null },
-    { id: 'presentador-3', nombre: 'Presentador 3', estado: 'disponible', lugar: null },
-    { id: 'presentador-4', nombre: 'Presentador 4', estado: 'disponible', lugar: null },
-    { id: 'presentador-5', nombre: 'Presentador 5', estado: 'disponible', lugar: null },
-    { id: 'webcam-carlos', nombre: 'WebCam Carlos', estado: 'disponible', lugar: null },
-    { id: 'webcam-ricar', nombre: 'WebCam Ricar', estado: 'disponible', lugar: null },
-    { id: 'webcam-roxy', nombre: 'WebCam Roxy', estado: 'disponible', lugar: null },
-];
+// === CONFIGURACIÓN DE FIREBASE (¡TU CÓDIGO!) ===
+const firebaseConfig = {
+    apiKey: "AIzaSyAljDO9kRa3QRWdA1BCuce6gmHzDS1_gOM",
+    authDomain: "control-de-prestamos-c10a3.firebaseapp.com",
+    databaseURL: "https://control-de-prestamos-c10a3-default-rtdb.firebaseio.com",
+    projectId: "control-de-prestamos-c10a3",
+    storageBucket: "control-de-prestamos-c10a3.firebasestorage.app",
+    messagingSenderId: "960767851590",
+    appId: "1:960767851590:web:9acf5ff042cd54707a9e47",
+    measurementId: "G-Y64R9QXZ4Z"
+};
 
-// Lugares de préstamo
+// === INICIALIZACIÓN DE FIREBASE ===
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const equiposRef = database.ref('equipos');
+
+// === VARIABLES DEL PROGRAMA ===
+let equipos = []; // Los datos se cargarán desde Firebase
+let equipoSeleccionado = null;
 const lugares = [
     "Aula A", "Aula B", "Aula C", "Aula D",
     "Auditorio A", "Auditorio B", "Auditorio C", "Auditorio D",
@@ -18,18 +25,44 @@ const lugares = [
     "WorkShop", "Salon Posgrado Decanato", "Pre-Clínica", "Microscopia"
 ];
 
-let equipoSeleccionado = null; // Para guardar el ID del equipo que se va a prestar
+// === FUNCIONES PRINCIPALES ===
 
-// Función para inicializar la tabla de equipos al cargar la página
+/**
+ * Escucha los cambios en la base de datos y actualiza la interfaz en tiempo real.
+ */
+equiposRef.on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+        equipos = data;
+    } else {
+        // Inicializa la base de datos la primera vez que se carga
+        equipos = [
+            { id: 'presentador-1', nombre: 'Presentador 1', estado: 'disponible', lugar: null },
+            { id: 'presentador-2', nombre: 'Presentador 2', estado: 'disponible', lugar: null },
+            { id: 'presentador-3', nombre: 'Presentador 3', estado: 'disponible', lugar: null },
+            { id: 'presentador-4', nombre: 'Presentador 4', estado: 'disponible', lugar: null },
+            { id: 'presentador-5', nombre: 'Presentador 5', estado: 'disponible', lugar: null },
+            { id: 'webcam-carlos', nombre: 'WebCam Carlos', estado: 'disponible', lugar: null },
+            { id: 'webcam-ricar', nombre: 'WebCam Ricar', estado: 'disponible', lugar: null },
+            { id: 'webcam-roxy', nombre: 'WebCam Roxy', estado: 'disponible', lugar: null },
+        ];
+        equiposRef.set(equipos);
+    }
+    renderizarEquipos();
+});
+
+/**
+ * Dibuja la tabla de equipos en la página.
+ */
 function renderizarEquipos() {
     const equiposList = document.getElementById('equipos-list');
-    equiposList.innerHTML = ''; // Limpiar la lista
+    equiposList.innerHTML = '';
 
     equipos.forEach(equipo => {
         const fila = document.createElement('tr');
         
-        let estadoClase = equipo.estado === 'prestado' ? 'prestado' : 'disponible';
-        let lugarTexto = equipo.lugar || 'N/A';
+        const estadoClase = equipo.estado === 'prestado' ? 'prestado' : 'disponible';
+        const lugarTexto = equipo.lugar || 'N/A';
         let accionesHtml = '';
 
         if (equipo.estado === 'disponible') {
@@ -48,12 +81,14 @@ function renderizarEquipos() {
     });
 }
 
-// Función para mostrar el modal de lugares
+/**
+ * Muestra el modal para seleccionar el lugar de préstamo.
+ */
 function mostrarLugares(equipoId) {
     equipoSeleccionado = equipoId;
     const modal = document.getElementById('lugar-modal');
     const lugaresList = document.getElementById('lugares-list');
-    lugaresList.innerHTML = ''; // Limpiar la lista anterior
+    lugaresList.innerHTML = '';
 
     lugares.forEach(lugar => {
         const botonLugar = document.createElement('button');
@@ -65,37 +100,54 @@ function mostrarLugares(equipoId) {
     modal.style.display = 'block';
 }
 
-// Función para ocultar el modal de lugares
+/**
+ * Oculta el modal de selección de lugares.
+ */
 function ocultarLugares() {
     const modal = document.getElementById('lugar-modal');
     modal.style.display = 'none';
 }
 
-// Función para prestar un equipo
+/**
+ * Presta un equipo y actualiza la base de datos.
+ */
 function prestar(lugar) {
-    const equipo = equipos.find(eq => eq.id === equipoSeleccionado);
-    if (equipo && equipo.estado === 'disponible') {
-        equipo.estado = 'prestado';
-        equipo.lugar = lugar;
-        agregarRegistro(`Se prestó ${equipo.nombre} a ${lugar}.`);
-        renderizarEquipos(); // Volver a dibujar la tabla
+    const equipoIndex = equipos.findIndex(eq => eq.id === equipoSeleccionado);
+    if (equipoIndex !== -1 && equipos[equipoIndex].estado === 'disponible') {
+        // Modifica el objeto en el array local
+        equipos[equipoIndex].estado = 'prestado';
+        equipos[equipoIndex].lugar = lugar;
+
+        // Actualiza la base de datos
+        equiposRef.set(equipos);
+        
+        agregarRegistro(`Se prestó ${equipos[equipoIndex].nombre} a ${lugar}.`);
         ocultarLugares();
     }
 }
 
-// Función para devolver un equipo
+/**
+ * Devuelve un equipo y actualiza la base de datos.
+ */
 function devolver(equipoId) {
-    const equipo = equipos.find(eq => eq.id === equipoId);
-    if (equipo && equipo.estado === 'prestado') {
-        const lugarAnterior = equipo.lugar;
-        equipo.estado = 'disponible';
-        equipo.lugar = null;
-        agregarRegistro(`Se devolvió ${equipo.nombre} (prestado en ${lugarAnterior}).`);
-        renderizarEquipos(); // Volver a dibujar la tabla
+    const equipoIndex = equipos.findIndex(eq => eq.id === equipoId);
+    if (equipoIndex !== -1 && equipos[equipoIndex].estado === 'prestado') {
+        const lugarAnterior = equipos[equipoIndex].lugar;
+
+        // Modifica el objeto en el array local
+        equipos[equipoIndex].estado = 'disponible';
+        equipos[equipoIndex].lugar = null;
+
+        // Actualiza la base de datos
+        equiposRef.set(equipos);
+
+        agregarRegistro(`Se devolvió ${equipos[equipoIndex].nombre} (prestado en ${lugarAnterior}).`);
     }
 }
 
-// Función para agregar un registro en la lista
+/**
+ * Agrega un registro al historial (este historial no es persistente).
+ */
 function agregarRegistro(mensaje) {
     const logList = document.getElementById('log-list');
     const nuevoLog = document.createElement('li');
@@ -104,5 +156,5 @@ function agregarRegistro(mensaje) {
     logList.prepend(nuevoLog);
 }
 
-// Llama a esta función al cargar la página para mostrar los equipos
-document.addEventListener('DOMContentLoaded', renderizarEquipos);
+// Nota: La función 'DOMContentLoaded' ya no es necesaria, 
+// ya que 'equiposRef.on' se encarga de la carga y el renderizado inicial.
