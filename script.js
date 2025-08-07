@@ -14,9 +14,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const equiposRef = database.ref('equipos');
+// NUEVO: Referencia a la rama del historial
+const historialRef = database.ref('historial');
 
 // === VARIABLES DEL PROGRAMA ===
-let equipos = []; // Los datos se cargarán desde Firebase
+let equipos = [];
 let equipoSeleccionado = null;
 const lugares = [
     "Aula A", "Aula B", "Aula C", "Aula D",
@@ -24,18 +26,20 @@ const lugares = [
     "Sala de Profesores Clinicas", "Sala de Profesores Decanato",
     "WorkShop", "Salon Posgrado Decanato", "Pre-Clínica", "Microscopia"
 ];
+// Variable local para el historial (se llena desde Firebase)
+let historial = [];
 
 // === FUNCIONES PRINCIPALES ===
 
 /**
- * Escucha los cambios en la base de datos y actualiza la interfaz en tiempo real.
+ * Escucha los cambios en la base de datos de equipos y actualiza la interfaz.
  */
 equiposRef.on('value', (snapshot) => {
     const data = snapshot.val();
     if (data) {
         equipos = data;
     } else {
-        // Inicializa la base de datos la primera vez que se carga
+        // Inicializa la base de datos la primera vez
         equipos = [
             { id: 'presentador-1', nombre: 'Presentador 1', estado: 'disponible', lugar: null },
             { id: 'presentador-2', nombre: 'Presentador 2', estado: 'disponible', lugar: null },
@@ -49,6 +53,21 @@ equiposRef.on('value', (snapshot) => {
         equiposRef.set(equipos);
     }
     renderizarEquipos();
+});
+
+/**
+ * NUEVO: Escucha los cambios en la base de datos del historial y lo dibuja.
+ */
+historialRef.on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+        // Los registros en Firebase vienen en un objeto, los convertimos a un array
+        historial = Object.values(data);
+        historial.reverse(); // Para que los más recientes salgan primero
+    } else {
+        historial = [];
+    }
+    renderizarHistorial();
 });
 
 /**
@@ -82,8 +101,19 @@ function renderizarEquipos() {
 }
 
 /**
- * Muestra el modal para seleccionar el lugar de préstamo.
+ * NUEVO: Dibuja el historial de movimientos en la página.
  */
+function renderizarHistorial() {
+    const logList = document.getElementById('log-list');
+    logList.innerHTML = '';
+
+    historial.slice(0, 20).forEach(log => { // Muestra solo los 20 más recientes
+        const nuevoLog = document.createElement('li');
+        nuevoLog.innerText = log;
+        logList.appendChild(nuevoLog);
+    });
+}
+
 function mostrarLugares(equipoId) {
     equipoSeleccionado = equipoId;
     const modal = document.getElementById('lugar-modal');
@@ -100,61 +130,46 @@ function mostrarLugares(equipoId) {
     modal.style.display = 'block';
 }
 
-/**
- * Oculta el modal de selección de lugares.
- */
 function ocultarLugares() {
     const modal = document.getElementById('lugar-modal');
     modal.style.display = 'none';
 }
 
 /**
- * Presta un equipo y actualiza la base de datos.
+ * Presta un equipo, actualiza la base de datos y agrega un registro.
  */
 function prestar(lugar) {
     const equipoIndex = equipos.findIndex(eq => eq.id === equipoSeleccionado);
     if (equipoIndex !== -1 && equipos[equipoIndex].estado === 'disponible') {
-        // Modifica el objeto en el array local
         equipos[equipoIndex].estado = 'prestado';
         equipos[equipoIndex].lugar = lugar;
 
-        // Actualiza la base de datos
+        // Guarda el cambio de estado en la base de datos
         equiposRef.set(equipos);
         
-        agregarRegistro(`Se prestó ${equipos[equipoIndex].nombre} a ${lugar}.`);
+        // NUEVO: Agrega un registro al historial de la base de datos
+        const mensaje = `[${new Date().toLocaleString()}] Se prestó ${equipos[equipoIndex].nombre} a ${lugar}.`;
+        historialRef.push(mensaje);
+
         ocultarLugares();
     }
 }
 
 /**
- * Devuelve un equipo y actualiza la base de datos.
+ * Devuelve un equipo, actualiza la base de datos y agrega un registro.
  */
 function devolver(equipoId) {
     const equipoIndex = equipos.findIndex(eq => eq.id === equipoId);
     if (equipoIndex !== -1 && equipos[equipoIndex].estado === 'prestado') {
         const lugarAnterior = equipos[equipoIndex].lugar;
-
-        // Modifica el objeto en el array local
         equipos[equipoIndex].estado = 'disponible';
         equipos[equipoIndex].lugar = null;
 
-        // Actualiza la base de datos
+        // Guarda el cambio de estado en la base de datos
         equiposRef.set(equipos);
 
-        agregarRegistro(`Se devolvió ${equipos[equipoIndex].nombre} (prestado en ${lugarAnterior}).`);
+        // NUEVO: Agrega un registro al historial de la base de datos
+        const mensaje = `[${new Date().toLocaleString()}] Se devolvió ${equipos[equipoIndex].nombre} (prestado en ${lugarAnterior}).`;
+        historialRef.push(mensaje);
     }
 }
-
-/**
- * Agrega un registro al historial (este historial no es persistente).
- */
-function agregarRegistro(mensaje) {
-    const logList = document.getElementById('log-list');
-    const nuevoLog = document.createElement('li');
-    const fecha = new Date().toLocaleString();
-    nuevoLog.innerText = `[${fecha}] ${mensaje}`;
-    logList.prepend(nuevoLog);
-}
-
-// Nota: La función 'DOMContentLoaded' ya no es necesaria, 
-// ya que 'equiposRef.on' se encarga de la carga y el renderizado inicial.
