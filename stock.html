@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Préstamos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Control de Préstamos</h1>
+
+        <section class="stock-section">
+            <h2>Equipos Disponibles</h2>
+            <table id="stock-table">
+                <thead>
+                    <tr>
+                        <th>Artículo</th>
+                        <th>Estado</th>
+                        <th>Lugar</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="equipos-list">
+                    </tbody>
+            </table>
+        </section>
+
+        <section class="log-section">
+            <h2>Registro de Préstamos y Devoluciones</h2>
+            <ul id="log-list"></ul>
+        </section>
+
+        <div id="lugar-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-button" onclick="ocultarLugares()">&times;</span>
+                <h3>Selecciona el lugar para el préstamo</h3>
+                <div id="lugares-list">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
