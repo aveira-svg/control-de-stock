@@ -188,3 +188,134 @@ ul li {
         width: 95%;
     }
 }
+/* Estilos adicionales para la nueva página */
+.back-button {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.places-section {
+    margin-top: 30px;
+}
+
+.change-state-btn {
+    background-color: #007bff;
+    color: white;
+}
+/* Estilos adicionales para la nueva página */
+.back-button {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.places-section {
+    margin-top: 30px;
+}
+
+#places-list .encendido {
+    color: #28a745;
+    font-weight: bold;
+}
+
+#places-list .apagado {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.change-state-btn {
+    background-color: #007bff;    
+}
+
+.change-state-btn.apagado {
+    background-color: #dc3545;
+    color: white; /* Corregido: Texto del botón en blanco */
+}
+
+.log-section {
+    margin-top: 30px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    background-color: #e9ecef;
+    padding: 10px;
+    border-left: 5px solid #0056b3;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+/* ... código CSS anterior ... */
+
+/* Estilos de la nueva página */
+.back-button {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.places-section {
+    margin-top: 30px;
+}
+
+#places-list .encendido {
+    color: rgb(255, 0, 0);
+    font-weight: bold;
+}
+
+#places-list .apagado {
+    color: rgb(0, 139, 19);
+    font-weight: bold;
+}
+
+/* --- NUEVO ESTILO PARA EL BOTÓN ÚNICO --- */
+.state-button {    
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.state-button.encendido {
+    background-color: #bdf0ff;
+    color: whitesmoke
+    
+}
+
+.state-button.apagado {
+    background-color: #bdf0ff;
+    color: whitesmoke
+}
+
+.log-section {
+    margin-top: 30px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    background-color: #e9ecef;
+    padding: 10px;
+    border-left: 5px solid #0056b3;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}

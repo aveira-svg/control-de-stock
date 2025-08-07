@@ -14,8 +14,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const equiposRef = database.ref('equipos');
-// NUEVO: Referencia a la rama del historial
-const historialRef = database.ref('historial');
+// NUEVO: Referencia para el historial de préstamos
+const historialPrestamosRef = database.ref('historial-prestamos');
 
 // === VARIABLES DEL PROGRAMA ===
 let equipos = [];
@@ -26,20 +26,15 @@ const lugares = [
     "Sala de Profesores Clinicas", "Sala de Profesores Decanato",
     "WorkShop", "Salon Posgrado Decanato", "Pre-Clínica", "Microscopia"
 ];
-// Variable local para el historial (se llena desde Firebase)
-let historial = [];
+let historialPrestamos = [];
 
 // === FUNCIONES PRINCIPALES ===
 
-/**
- * Escucha los cambios en la base de datos de equipos y actualiza la interfaz.
- */
 equiposRef.on('value', (snapshot) => {
     const data = snapshot.val();
     if (data) {
         equipos = data;
     } else {
-        // Inicializa la base de datos la primera vez
         equipos = [
             { id: 'presentador-1', nombre: 'Presentador 1', estado: 'disponible', lugar: null },
             { id: 'presentador-2', nombre: 'Presentador 2', estado: 'disponible', lugar: null },
@@ -55,41 +50,31 @@ equiposRef.on('value', (snapshot) => {
     renderizarEquipos();
 });
 
-/**
- * NUEVO: Escucha los cambios en la base de datos del historial y lo dibuja.
- */
-historialRef.on('value', (snapshot) => {
+// NUEVO: Escucha los cambios en el historial de préstamos
+historialPrestamosRef.on('value', (snapshot) => {
     const data = snapshot.val();
     if (data) {
-        // Los registros en Firebase vienen en un objeto, los convertimos a un array
-        historial = Object.values(data);
-        historial.reverse(); // Para que los más recientes salgan primero
+        historialPrestamos = Object.values(data);
+        historialPrestamos.reverse();
     } else {
-        historial = [];
+        historialPrestamos = [];
     }
-    renderizarHistorial();
+    renderizarHistorial(historialPrestamos, 'log-list');
 });
 
-/**
- * Dibuja la tabla de equipos en la página.
- */
 function renderizarEquipos() {
     const equiposList = document.getElementById('equipos-list');
     equiposList.innerHTML = '';
-
     equipos.forEach(equipo => {
         const fila = document.createElement('tr');
-        
         const estadoClase = equipo.estado === 'prestado' ? 'prestado' : 'disponible';
         const lugarTexto = equipo.lugar || 'N/A';
         let accionesHtml = '';
-
         if (equipo.estado === 'disponible') {
             accionesHtml = `<button class="prestar-btn" onclick="mostrarLugares('${equipo.id}')">Prestar</button>`;
         } else {
             accionesHtml = `<button class="devolver-btn" onclick="devolver('${equipo.id}')">Devolver</button>`;
         }
-
         fila.innerHTML = `
             <td data-label="Artículo">${equipo.nombre}</td>
             <td data-label="Estado" class="${estadoClase}">${equipo.estado === 'disponible' ? 'Disponible' : 'Prestado'}</td>
@@ -100,14 +85,10 @@ function renderizarEquipos() {
     });
 }
 
-/**
- * NUEVO: Dibuja el historial de movimientos en la página.
- */
-function renderizarHistorial() {
-    const logList = document.getElementById('log-list');
+function renderizarHistorial(historialData, elementId) {
+    const logList = document.getElementById(elementId);
     logList.innerHTML = '';
-
-    historial.slice(0, 20).forEach(log => { // Muestra solo los 20 más recientes
+    historialData.slice(0, 20).forEach(log => {
         const nuevoLog = document.createElement('li');
         nuevoLog.innerText = log;
         logList.appendChild(nuevoLog);
@@ -119,14 +100,12 @@ function mostrarLugares(equipoId) {
     const modal = document.getElementById('lugar-modal');
     const lugaresList = document.getElementById('lugares-list');
     lugaresList.innerHTML = '';
-
     lugares.forEach(lugar => {
         const botonLugar = document.createElement('button');
         botonLugar.innerText = lugar;
         botonLugar.onclick = () => prestar(lugar);
         lugaresList.appendChild(botonLugar);
     });
-
     modal.style.display = 'block';
 }
 
@@ -135,41 +114,26 @@ function ocultarLugares() {
     modal.style.display = 'none';
 }
 
-/**
- * Presta un equipo, actualiza la base de datos y agrega un registro.
- */
 function prestar(lugar) {
     const equipoIndex = equipos.findIndex(eq => eq.id === equipoSeleccionado);
     if (equipoIndex !== -1 && equipos[equipoIndex].estado === 'disponible') {
         equipos[equipoIndex].estado = 'prestado';
         equipos[equipoIndex].lugar = lugar;
-
-        // Guarda el cambio de estado en la base de datos
         equiposRef.set(equipos);
-        
-        // NUEVO: Agrega un registro al historial de la base de datos
         const mensaje = `[${new Date().toLocaleString()}] Se prestó ${equipos[equipoIndex].nombre} a ${lugar}.`;
-        historialRef.push(mensaje);
-
+        historialPrestamosRef.push(mensaje); // Guarda en el historial de préstamos
         ocultarLugares();
     }
 }
 
-/**
- * Devuelve un equipo, actualiza la base de datos y agrega un registro.
- */
 function devolver(equipoId) {
     const equipoIndex = equipos.findIndex(eq => eq.id === equipoId);
     if (equipoIndex !== -1 && equipos[equipoIndex].estado === 'prestado') {
         const lugarAnterior = equipos[equipoIndex].lugar;
         equipos[equipoIndex].estado = 'disponible';
         equipos[equipoIndex].lugar = null;
-
-        // Guarda el cambio de estado en la base de datos
         equiposRef.set(equipos);
-
-        // NUEVO: Agrega un registro al historial de la base de datos
         const mensaje = `[${new Date().toLocaleString()}] Se devolvió ${equipos[equipoIndex].nombre} (prestado en ${lugarAnterior}).`;
-        historialRef.push(mensaje);
+        historialPrestamosRef.push(mensaje); // Guarda en el historial de préstamos
     }
 }
