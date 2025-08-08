@@ -22,7 +22,7 @@ let equipos = [];
 let equipoSeleccionado = null;
 const lugares = [
     "Aula A", "Aula B", "Aula C", "Aula D",
-    "Auditorio A", "Auditorio B", "Auditorio C", "Auditorio D",
+    "Auditorio A", "Auditorio B", "Auditorio C",
     "Sala de Profesores Clinicas", "Sala de Profesores Decanato",
     "WorkShop", "Salon Posgrado Decanato", "Pre-Clínica", "Microscopia"
 ];
