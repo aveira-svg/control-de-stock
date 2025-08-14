@@ -21,11 +21,10 @@ let lugaresData = {};
 let historialLugares = [];
 
 const lugaresList = [
-    "Aula A", "Aula B", "Aula C", "Aula D",
-    "Sala de Profesores Clinicas", "Sala de Profesores Decanato",    
     "Auditorio A", "Auditorio B", "Auditorio C",
-    "WorkShop", "Salon Posgrado Decanato", "Pre-Clínica", "Microscopia"  
-    
+    "WorkShop", "Salon Posgrado Decanato", "Pre-Clínica", "Microscopia",
+    "Aula A", "Aula B", "Aula C", "Aula D",
+    "Sala de Profesores Clinicas", "Sala de Profesores Decanato" 
 ];
 
 // === FUNCIONES PRINCIPALES ===
@@ -93,5 +92,6 @@ function cambiarEstado(lugar, nuevoEstado) {
         })
         .catch(error => console.error("Error al actualizar el estado: ", error));
 }
+
 
 
