@@ -41,7 +41,6 @@ equiposRef.on('value', (snapshot) => {
             { id: 'presentador-3', nombre: 'Presentador 3', estado: 'disponible', lugar: null },
             { id: 'presentador-4', nombre: 'Presentador 4', estado: 'disponible', lugar: null },
             { id: 'presentador-5', nombre: 'Presentador 5', estado: 'disponible', lugar: null },
-            { id: 'presentador-6', nombre: 'Presentador 5', estado: 'disponible', lugar: null },
             { id: 'webcam-carlos', nombre: 'WebCam Carlos', estado: 'disponible', lugar: null },
             { id: 'webcam-ricar', nombre: 'WebCam Ricar', estado: 'disponible', lugar: null },
             { id: 'webcam-roxy', nombre: 'WebCam Roxy', estado: 'disponible', lugar: null },
@@ -138,4 +137,5 @@ function devolver(equipoId) {
         historialPrestamosRef.push(mensaje); // Guarda en el historial de préstamos
     }
 }
+
 
