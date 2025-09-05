@@ -47,6 +47,8 @@ equiposRef.on('value', (snapshot) => {
             { id: 'webcam-roxy', nombre: 'WebCam Roxy', estado: 'disponible', lugar: null },
             { id: 'webcam-ale', nombre: 'WebCam Ale', estado: 'disponible', lugar: null },
             { id: 'teclado-mause-inalambrico', nombre: 'Teclado&Mause Inalambrico', estado: 'disponible', lugar: null },
+            { id: 'cañon_01', nombre: 'Cañón 01', estado: 'disponible', lugar: null },
+            { id: 'cañon_02', nombre: 'Cañón 02', estado: 'disponible', lugar: null },
         ];
         equiposRef.set(equipos);
     }
@@ -140,6 +142,7 @@ function devolver(equipoId) {
         historialPrestamosRef.push(mensaje); // Guarda en el historial de préstamos
     }
 }
+
 
 
 
