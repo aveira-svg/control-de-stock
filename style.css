@@ -1,0 +1,343 @@
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    color: #0056b3;
+    text-align: center;
+}
+
+.stock-section, .log-section {
+    margin-bottom: 30px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+/* Animaciones globales para botones */
+.btn, .state-button, #lugares-list button {
+    transition: background-color .2s ease, color .2s ease, border-color .2s ease, box-shadow .15s ease, transform .08s ease;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+}
+.btn:hover, .state-button:hover, #lugares-list button:hover {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+.btn:active, .state-button:active, #lugares-list button:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+.btn:focus-visible, .state-button:focus-visible, #lugares-list button:focus-visible {
+    outline: 2px solid #93c5fd;
+    outline-offset: 2px;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+.prestar-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.devolver-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Botones unificados */
+.btn { padding: 8px 12px; border-radius: 8px; border: 1px solid transparent; cursor: pointer; transition: background-color .2s ease, color .2s ease, border-color .2s ease; }
+.btn:disabled { opacity: .6; cursor: not-allowed; }
+.btn-primary { background:#1d4ed8; color:#fff; }
+.btn-primary:hover { background:#1e40af; }
+.btn-danger { background:#dc2626; color:#fff; }
+.btn-danger:hover { background:#b91c1c; }
+.btn-warning { background:#f59e0b; color:#111827; }
+.btn-warning:hover { background:#d97706; }
+.btn-ghost { background:transparent; color:#374151; border-color:#e5e7eb; }
+.btn-ghost:hover { background:#f3f4f6; }
+
+/* Badges de estado */
+.status-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:.9rem; font-weight:600; }
+.status-disponible { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+.status-prestado { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
+.status-encendido { background:#eef2ff; color:#1e3a8a; border:1px solid #c7d2fe; }
+.status-apagado { background:#fff7ed; color:#9a3412; border:1px solid #fed7aa; }
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    background-color: #e9ecef;
+    padding: 10px;
+    border-left: 5px solid #0056b3;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+}
+
+#lugares-list { display:flex; gap:12px; margin-top:20px; }
+.lugar-col { flex:1; display:flex; flex-direction:column; gap:10px; }
+#lugares-list button { width:100%; padding:12px; background:#6b7280; color:#fff; border:none; border-radius:8px; cursor:pointer; }
+#lugares-list button:hover { background:#4b5563; }
+
+/* Compatibilidad móvil */
+@media (max-width: 600px) {
+    .container {
+        margin: 10px;
+        padding: 15px;
+    }
+    
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+    
+    thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    
+    tr {
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+        border-radius: 5px;
+    }
+
+    td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+    }
+    
+    td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 6px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+    }
+    
+    td:nth-of-type(1):before { content: "Artículo"; }
+    td:nth-of-type(2):before { content: "Estado"; }
+    td:nth-of-type(3):before { content: "Lugar"; }
+    td:nth-of-type(4):before { content: "Acciones"; }
+
+    .modal-content {
+        margin: 25% auto;
+        width: 95%;
+    }
+}
+/* Estilos adicionales para la nueva página */
+.top-nav {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fb;
+    border: 1px solid #e6e8ef;
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+
+.nav-link {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    color: #4b5563;
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+.nav-link:hover {
+    background: #eef2ff;
+    color: #1f3a8a;
+}
+
+.nav-link.active {
+    background: #1d4ed8;
+    color: #ffffff;
+}
+
+.places-section {
+    margin-top: 30px;
+}
+
+.change-state-btn {
+    background-color: #007bff;
+    color: white;
+}
+/* (Reemplazado por .top-nav y .nav-link) */
+
+.places-section {
+    margin-top: 30px;
+}
+
+#places-list .encendido {
+    color: #28a745;
+    font-weight: bold;
+}
+
+#places-list .apagado {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.change-state-btn {
+    background-color: #007bff;    
+}
+
+.change-state-btn.apagado {
+    background-color: #dc3545;
+    color: white; /* Corregido: Texto del botón en blanco */
+}
+
+.log-section {
+    margin-top: 30px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    background-color: #e9ecef;
+    padding: 10px;
+    border-left: 5px solid #0056b3;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+/* ... código CSS anterior ... */
+
+/* Estilos de la nueva página */
+.back-button {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.places-section {
+    margin-top: 30px;
+}
+
+#places-list .encendido {
+    color: rgb(255, 0, 0);
+    font-weight: bold;
+}
+
+#places-list .apagado {
+    color: rgb(0, 139, 19);
+    font-weight: bold;
+}
+
+/* --- NUEVO ESTILO PARA EL BOTÓN ÚNICO --- */
+.state-button { padding:8px 12px; border-radius:8px; border:1px solid #e5e7eb; background:#ffffff; cursor:pointer; }
+.state-button.encendido { background:#eef2ff; color:#1e3a8a; border-color:#c7d2fe; }
+.state-button.apagado { background:#fff7ed; color:#9a3412; border-color:#fed7aa; }
+
+.log-section {
+    margin-top: 30px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    background-color: #e9ecef;
+    padding: 10px;
+    border-left: 5px solid #0056b3;
+    margin-bottom: 8px;
+    border-radius: 4px;
+
+}
