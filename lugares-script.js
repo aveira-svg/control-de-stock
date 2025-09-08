@@ -1,3 +1,4 @@
+
 // === CONFIGURACIÓN DE FIREBASE (TU CÓDIGO) ===
 const firebaseConfig = {
     apiKey: "AIzaSyAljDO9kRa3QRWdA1BCuce6gmHzDS1_gOM",
@@ -92,6 +93,7 @@ function cambiarEstado(lugar, nuevoEstado) {
         })
         .catch(error => console.error("Error al actualizar el estado: ", error));
 }
+
 
 
 
