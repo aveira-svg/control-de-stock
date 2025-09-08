@@ -1,4 +1,3 @@
-
 // === CONFIGURACIÓN DE FIREBASE (TU CÓDIGO) ===
 const firebaseConfig = {
     apiKey: "AIzaSyAljDO9kRa3QRWdA1BCuce6gmHzDS1_gOM",
@@ -10,7 +9,7 @@ const firebaseConfig = {
     appId: "1:960767851590:web:9acf5ff042cd54707a9e47",
     measurementId: "G-Y64R9QXZ4Z"
 };
-
+// avergas
 // === INICIALIZACIÓN DE FIREBASE ===
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
@@ -93,6 +92,7 @@ function cambiarEstado(lugar, nuevoEstado) {
         })
         .catch(error => console.error("Error al actualizar el estado: ", error));
 }
+
 
 
 
