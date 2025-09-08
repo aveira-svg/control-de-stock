@@ -11,38 +11,39 @@ const firebaseConfig = {
 };
 
 // === INICIALIZACIÓN DE FIREBASE ===
-try {
-    if (typeof firebase === 'undefined') {
-        throw new Error('Firebase no está disponible');
-    }
-    firebase.initializeApp(firebaseConfig);
-} catch (err) {
-    const logList = document.getElementById('log-list');
-    if (logList) {
-        const li = document.createElement('li');
-        li.textContent = 'Error inicializando Firebase: ' + (err && err.message ? err.message : err);
-        logList.prepend(li);
-    }
-}
-const database = firebase && firebase.database ? firebase.database() : null;
-const equiposRef = database ? database.ref('equipos') : null;
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const equiposRef = database.ref('equipos');
 // NUEVO: Referencia para el historial de préstamos
-const historialPrestamosRef = database ? database.ref('historial-prestamos') : null;
+const historialPrestamosRef = database.ref('historial-prestamos');
 
 // === VARIABLES DEL PROGRAMA ===
 let equipos = [];
 let equipoSeleccionado = null;
-const lugares = [
-    "Aula A", "Aula B", "Aula C", "Aula D",
-    "Auditorio A", "Auditorio B", "Auditorio C",
-    "Sala de Profesores Clinicas", "Sala de Profesores Decanato",
-    "WorkShop", "Salon Posgrado Decanato", "Pre-Clínica", "Microscopia"
+// Columnas solicitadas para el selector de préstamo
+const lugarColumns = [
+    [
+        "Auditorio A", "Auditorio B", "Auditorio C", "Pre-Clínica", "Microscopia"
+    ],
+    [
+        "Sala de Profesores Decanato", "Sala de Profesores Clinicas", "Salon Posgrado Decanato", "WorkShop", "Consejo"
+    ],
+    [
+        "Aula A", "Aula B", "Aula C", "Aula D"
+    ]
 ];
+// Etiquetas de visualización (abreviadas) manteniendo el valor real al guardar
+const lugarDisplay = {
+    "Sala de Profesores Decanato": "SProf. Decanato",
+    "Sala de Profesores Clinicas": "SProf. Clínicas",
+    "Salon Posgrado Decanato": "Salón Posgrado",
+    "Microscopia": "Microscopía"
+};
 let historialPrestamos = [];
 
 // === FUNCIONES PRINCIPALES ===
 
-if (equiposRef) equiposRef.on('value', (snapshot) => {
+equiposRef.on('value', (snapshot) => {
     const data = snapshot.val();
     if (data) {
         equipos = data;
@@ -62,28 +63,13 @@ if (equiposRef) equiposRef.on('value', (snapshot) => {
             { id: 'cañon_01', nombre: 'Cañón 01', estado: 'disponible', lugar: null },
             { id: 'cañon_02', nombre: 'Cañón 02', estado: 'disponible', lugar: null },
         ];
-        equiposRef.set(equipos).catch(function(error){
-            const logList = document.getElementById('log-list');
-            if (logList) {
-                const li = document.createElement('li');
-                li.textContent = 'Permiso denegado al escribir equipos: ' + error.message;
-                logList.prepend(li);
-            }
-        });
-    }
-    renderizarEquipos();
-}, function(error){
-    const logList = document.getElementById('log-list');
-    if (logList) {
-        const li = document.createElement('li');
-        li.textContent = 'Error leyendo equipos: ' + error.message;
-        logList.prepend(li);
+        equiposRef.set(equipos);
     }
     renderizarEquipos();
 });
 
 // NUEVO: Escucha los cambios en el historial de préstamos
-if (historialPrestamosRef) historialPrestamosRef.on('value', (snapshot) => {
+historialPrestamosRef.on('value', (snapshot) => {
     const data = snapshot.val();
     if (data) {
         historialPrestamos = Object.values(data);
@@ -92,13 +78,6 @@ if (historialPrestamosRef) historialPrestamosRef.on('value', (snapshot) => {
         historialPrestamos = [];
     }
     renderizarHistorial(historialPrestamos, 'log-list');
-}, function(error){
-    const logList = document.getElementById('log-list');
-    if (logList) {
-        const li = document.createElement('li');
-        li.textContent = 'Error leyendo historial: ' + error.message;
-        logList.prepend(li);
-    }
 });
 
 function renderizarEquipos() {
@@ -106,17 +85,17 @@ function renderizarEquipos() {
     equiposList.innerHTML = '';
     equipos.forEach(equipo => {
         const fila = document.createElement('tr');
-        const estadoClase = equipo.estado === 'prestado' ? 'prestado' : 'disponible';
+        const estadoClase = equipo.estado === 'prestado' ? 'status-prestado' : 'status-disponible';
         const lugarTexto = equipo.lugar || 'N/A';
         let accionesHtml = '';
         if (equipo.estado === 'disponible') {
-            accionesHtml = `<button class="prestar-btn" onclick="mostrarLugares('${equipo.id}')">Prestar</button>`;
+            accionesHtml = `<button class=\"btn btn-primary\" onclick=\"mostrarLugares('${equipo.id}')\">Prestar</button>`;
         } else {
-            accionesHtml = `<button class="devolver-btn" onclick="devolver('${equipo.id}')">Devolver</button>`;
+            accionesHtml = `<button class=\"btn btn-danger\" onclick=\"devolver('${equipo.id}')\">Devolver</button>`;
         }
         fila.innerHTML = `
             <td data-label="Artículo">${equipo.nombre}</td>
-            <td data-label="Estado" class="${estadoClase}">${equipo.estado === 'disponible' ? 'Disponible' : 'Prestado'}</td>
+            <td data-label="Estado"><span class="status-badge ${estadoClase}">${equipo.estado === 'disponible' ? 'Disponible' : 'Prestado'}</span></td>
             <td data-label="Lugar">${lugarTexto}</td>
             <td data-label="Acciones">${accionesHtml}</td>
         `;
@@ -139,11 +118,17 @@ function mostrarLugares(equipoId) {
     const modal = document.getElementById('lugar-modal');
     const lugaresList = document.getElementById('lugares-list');
     lugaresList.innerHTML = '';
-    lugares.forEach(lugar => {
-        const botonLugar = document.createElement('button');
-        botonLugar.innerText = lugar;
-        botonLugar.onclick = () => prestar(lugar);
-        lugaresList.appendChild(botonLugar);
+    // Crear 3 columnas
+    const columnas = [document.createElement('div'), document.createElement('div'), document.createElement('div')];
+    columnas.forEach(col => { col.className = 'lugar-col'; lugaresList.appendChild(col); });
+    // Rellenar cada columna con botones en el orden solicitado
+    lugarColumns.forEach((colData, idx) => {
+        colData.forEach(lugar => {
+            const botonLugar = document.createElement('button');
+            botonLugar.innerText = lugarDisplay[lugar] || lugar;
+            botonLugar.onclick = () => prestar(lugar);
+            columnas[idx].appendChild(botonLugar);
+        });
     });
     modal.style.display = 'block';
 }
@@ -158,23 +143,9 @@ function prestar(lugar) {
     if (equipoIndex !== -1 && equipos[equipoIndex].estado === 'disponible') {
         equipos[equipoIndex].estado = 'prestado';
         equipos[equipoIndex].lugar = lugar;
-        equiposRef.set(equipos).catch(function(error){
-            const logList = document.getElementById('log-list');
-            if (logList) {
-                const li = document.createElement('li');
-                li.textContent = 'Error escribiendo equipos: ' + error.message;
-                logList.prepend(li);
-            }
-        });
+        equiposRef.set(equipos);
         const mensaje = `[${new Date().toLocaleString()}] Se prestó ${equipos[equipoIndex].nombre} a ${lugar}.`;
-        if (historialPrestamosRef) historialPrestamosRef.push(mensaje).catch(function(error){
-            const logList = document.getElementById('log-list');
-            if (logList) {
-                const li = document.createElement('li');
-                li.textContent = 'Error escribiendo historial: ' + error.message;
-                logList.prepend(li);
-            }
-        }); // Guarda en el historial de préstamos
+        historialPrestamosRef.push(mensaje); // Guarda en el historial de préstamos
         ocultarLugares();
     }
 }
@@ -185,22 +156,8 @@ function devolver(equipoId) {
         const lugarAnterior = equipos[equipoIndex].lugar;
         equipos[equipoIndex].estado = 'disponible';
         equipos[equipoIndex].lugar = null;
-        equiposRef.set(equipos).catch(function(error){
-            const logList = document.getElementById('log-list');
-            if (logList) {
-                const li = document.createElement('li');
-                li.textContent = 'Error escribiendo equipos: ' + error.message;
-                logList.prepend(li);
-            }
-        });
+        equiposRef.set(equipos);
         const mensaje = `[${new Date().toLocaleString()}] Se devolvió ${equipos[equipoIndex].nombre} (prestado en ${lugarAnterior}).`;
-        if (historialPrestamosRef) historialPrestamosRef.push(mensaje).catch(function(error){
-            const logList = document.getElementById('log-list');
-            if (logList) {
-                const li = document.createElement('li');
-                li.textContent = 'Error escribiendo historial: ' + error.message;
-                logList.prepend(li);
-            }
-        }); // Guarda en el historial de préstamos
+        historialPrestamosRef.push(mensaje); // Guarda en el historial de préstamos
     }
 }
