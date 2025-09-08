@@ -1,9 +1,11 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
     background-color: #f4f4f9;
     color: #333;
     margin: 0;
     padding: 0;
+    font-size: 16px;
+    line-height: 1.5;
 }
 
 .container {
@@ -49,6 +51,23 @@ button {
     margin-right: 5px;
 }
 
+/* Animaciones globales para botones */
+.btn, .state-button, #lugares-list button {
+    transition: background-color .2s ease, color .2s ease, border-color .2s ease, box-shadow .15s ease, transform .08s ease;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+}
+.btn:hover, .state-button:hover, #lugares-list button:hover {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+.btn:active, .state-button:active, #lugares-list button:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+.btn:focus-visible, .state-button:focus-visible, #lugares-list button:focus-visible {
+    outline: 2px solid #93c5fd;
+    outline-offset: 2px;
+}
+
 button:hover {
     opacity: 0.8;
 }
@@ -62,6 +81,25 @@ button:hover {
     background-color: #dc3545;
     color: white;
 }
+
+/* Botones unificados */
+.btn { padding: 8px 12px; border-radius: 8px; border: 1px solid transparent; cursor: pointer; transition: background-color .2s ease, color .2s ease, border-color .2s ease; }
+.btn:disabled { opacity: .6; cursor: not-allowed; }
+.btn-primary { background:#1d4ed8; color:#fff; }
+.btn-primary:hover { background:#1e40af; }
+.btn-danger { background:#dc2626; color:#fff; }
+.btn-danger:hover { background:#b91c1c; }
+.btn-warning { background:#f59e0b; color:#111827; }
+.btn-warning:hover { background:#d97706; }
+.btn-ghost { background:transparent; color:#374151; border-color:#e5e7eb; }
+.btn-ghost:hover { background:#f3f4f6; }
+
+/* Badges de estado */
+.status-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:.9rem; font-weight:600; }
+.status-disponible { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+.status-prestado { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
+.status-encendido { background:#eef2ff; color:#1e3a8a; border:1px solid #c7d2fe; }
+.status-apagado { background:#fff7ed; color:#9a3412; border:1px solid #fed7aa; }
 
 ul {
     list-style-type: none;
@@ -116,26 +154,10 @@ ul li {
     text-decoration: none;
 }
 
-#lugares-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 10px;
-    margin-top: 20px;
-}
-
-#lugares-list button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#lugares-list button:hover {
-    background-color: #0056b3;
-}
+#lugares-list { display:flex; gap:12px; margin-top:20px; }
+.lugar-col { flex:1; display:flex; flex-direction:column; gap:10px; }
+#lugares-list button { width:100%; padding:12px; background:#6b7280; color:#fff; border:none; border-radius:8px; cursor:pointer; }
+#lugares-list button:hover { background:#4b5563; }
 
 /* Compatibilidad móvil */
 @media (max-width: 600px) {
@@ -189,14 +211,36 @@ ul li {
     }
 }
 /* Estilos adicionales para la nueva página */
-.back-button {
+.top-nav {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fb;
+    border: 1px solid #e6e8ef;
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+
+.nav-link {
     display: inline-block;
-    margin-bottom: 20px;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
+    padding: 8px 14px;
+    border-radius: 999px;
     text-decoration: none;
-    border-radius: 5px;
+    color: #4b5563;
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+.nav-link:hover {
+    background: #eef2ff;
+    color: #1f3a8a;
+}
+
+.nav-link.active {
+    background: #1d4ed8;
+    color: #ffffff;
 }
 
 .places-section {
@@ -207,16 +251,7 @@ ul li {
     background-color: #007bff;
     color: white;
 }
-/* Estilos adicionales para la nueva página */
-.back-button {
-    display: inline-block;
-    margin-bottom: 20px;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-}
+/* (Reemplazado por .top-nav y .nav-link) */
 
 .places-section {
     margin-top: 30px;
@@ -285,23 +320,9 @@ ul li {
 }
 
 /* --- NUEVO ESTILO PARA EL BOTÓN ÚNICO --- */
-.state-button {    
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.state-button.encendido {
-    background-color: #bdf0ff;
-    color: whitesmoke
-    
-}
-
-.state-button.apagado {
-    background-color: #bdf0ff;
-    color: whitesmoke
-}
+.state-button { padding:8px 12px; border-radius:8px; border:1px solid #e5e7eb; background:#ffffff; cursor:pointer; }
+.state-button.encendido { background:#eef2ff; color:#1e3a8a; border-color:#c7d2fe; }
+.state-button.apagado { background:#fff7ed; color:#9a3412; border-color:#fed7aa; }
 
 .log-section {
     margin-top: 30px;
@@ -320,4 +341,3 @@ ul li {
     border-radius: 4px;
 
 }
-
