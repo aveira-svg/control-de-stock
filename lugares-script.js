@@ -11,10 +11,22 @@ const firebaseConfig = {
 };
 // avergas
 // === INICIALIZACIÓN DE FIREBASE ===
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const lugaresRef = database.ref('lugares');
-const historialLugaresRef = database.ref('historial-lugares');
+try {
+    if (typeof firebase === 'undefined') {
+        throw new Error('Firebase no está disponible');
+    }
+    firebase.initializeApp(firebaseConfig);
+} catch (err) {
+    const logList = document.getElementById('log-list');
+    if (logList) {
+        const li = document.createElement('li');
+        li.textContent = 'Error inicializando Firebase: ' + (err && err.message ? err.message : err);
+        logList.prepend(li);
+    }
+}
+const database = firebase && firebase.database ? firebase.database() : null;
+const lugaresRef = database ? database.ref('lugares') : null;
+const historialLugaresRef = database ? database.ref('historial-lugares') : null;
 
 // === VARIABLES DEL PROGRAMA ===
 let lugaresData = {};
@@ -29,12 +41,19 @@ const lugaresList = [
 
 // === FUNCIONES PRINCIPALES ===
 
-lugaresRef.on('value', (snapshot) => {
+if (lugaresRef) lugaresRef.on('value', (snapshot) => {
     lugaresData = snapshot.val() || {};
     renderizarLugares();
+}, function(error){
+    const logList = document.getElementById('log-list');
+    if (logList) {
+        const li = document.createElement('li');
+        li.textContent = 'Error leyendo lugares: ' + error.message;
+        logList.prepend(li);
+    }
 });
 
-historialLugaresRef.on('value', (snapshot) => {
+if (historialLugaresRef) historialLugaresRef.on('value', (snapshot) => {
     const data = snapshot.val();
     if (data) {
         historialLugares = Object.values(data);
@@ -43,6 +62,13 @@ historialLugaresRef.on('value', (snapshot) => {
         historialLugares = [];
     }
     renderizarHistorial(historialLugares, 'log-list');
+}, function(error){
+    const logList = document.getElementById('log-list');
+    if (logList) {
+        const li = document.createElement('li');
+        li.textContent = 'Error leyendo historial: ' + error.message;
+        logList.prepend(li);
+    }
 });
 
 /**
@@ -85,16 +111,25 @@ function renderizarHistorial(historialData, elementId) {
 }
 
 function cambiarEstado(lugar, nuevoEstado) {
+    if (!lugaresRef) return;
     lugaresRef.child(lugar).set(nuevoEstado)
         .then(() => {
             const mensaje = `[${new Date().toLocaleString()}] Se cambió el estado de ${lugar} a ${nuevoEstado}.`;
-            historialLugaresRef.push(mensaje);
+            if (historialLugaresRef) historialLugaresRef.push(mensaje).catch(function(error){
+                const logList = document.getElementById('log-list');
+                if (logList) {
+                    const li = document.createElement('li');
+                    li.textContent = 'Error escribiendo historial: ' + error.message;
+                    logList.prepend(li);
+                }
+            });
         })
-        .catch(error => console.error("Error al actualizar el estado: ", error));
+        .catch(function(error){
+            const logList = document.getElementById('log-list');
+            if (logList) {
+                const li = document.createElement('li');
+                li.textContent = 'Error al actualizar el estado: ' + error.message;
+                logList.prepend(li);
+            }
+        });
 }
-
-
-
-
-
-
