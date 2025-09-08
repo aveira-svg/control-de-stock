@@ -1,4 +1,3 @@
-
 // === CONFIGURACIÓN DE FIREBASE (¡TU CÓDIGO!) ===
 const firebaseConfig = {
     apiKey: "AIzaSyAljDO9kRa3QRWdA1BCuce6gmHzDS1_gOM",
@@ -143,6 +142,7 @@ function devolver(equipoId) {
         historialPrestamosRef.push(mensaje); // Guarda en el historial de préstamos
     }
 }
+
 
 
 
