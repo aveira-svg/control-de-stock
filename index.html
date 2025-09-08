@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control de Préstamos</title>
-    <h1>Control de Préstamos</h1>
-<a href="lugares.html" class="back-button">Gestionar Lugares</a>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
+        <a href="lugares.html" class="back-button">Gestionar Lugares</a>
         <h1>Control de Préstamos</h1>
 
         <section class="stock-section">
@@ -43,11 +42,39 @@
         </div>
     </div>
 
+    <script>
+        // Captura errores generales para mostrarlos en la página (ayuda al diagnóstico en GitHub Pages)
+        (function(){
+            function appendLog(message){
+                try {
+                    var ul = document.getElementById('log-list');
+                    if (!ul) return;
+                    var li = document.createElement('li');
+                    li.textContent = message;
+                    ul.prepend(li);
+                } catch(_){}
+            }
+            window.addEventListener('error', function(e){
+                appendLog('Error JS: ' + (e && e.message ? e.message : 'desconocido'));
+            });
+            window.addEventListener('unhandledrejection', function(e){
+                appendLog('Promesa no manejada: ' + (e && e.reason ? (e.reason.message || String(e.reason)) : 'desconocida'));
+            });
+        })();
+    </script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    
+    <script>
+        // Verificación rápida de Firebase cargado
+        if (typeof firebase === 'undefined') {
+            var ul = document.getElementById('log-list');
+            if (ul) {
+                var li = document.createElement('li');
+                li.textContent = 'Firebase no se cargó. Revisa la red/CSP.';
+                ul.prepend(li);
+            }
+        }
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
-
-
