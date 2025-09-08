@@ -1,94 +1,52 @@
-// === CONFIGURACIÓN DE FIREBASE (TU CÓDIGO) ===
-const firebaseConfig = {
-    apiKey: "AIzaSyAljDO9kRa3QRWdA1BCuce6gmHzDS1_gOM",
-    authDomain: "control-de-prestamos-c10a3.firebaseapp.com",
-    databaseURL: "https://control-de-prestamos-c10a3-default-rtdb.firebaseio.com",
-    projectId: "control-de-prestamos-c10a3",
-    storageBucket: "control-de-prestamos-c10a3.firebasestorage.app",
-    messagingSenderId: "960767851590",
-    appId: "1:960767851590:web:9acf5ff042cd54707a9e47",
-    measurementId: "G-Y64R9QXZ4Z"
-};
-
-// === INICIALIZACIÓN DE FIREBASE ===
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const lugaresRef = database.ref('lugares');
-const historialLugaresRef = database.ref('historial-lugares');
-
-// === VARIABLES DEL PROGRAMA ===
-let lugaresData = {};
-let historialLugares = [];
-
-const lugaresList = [
-    "Auditorio A", "Auditorio B", "Auditorio C",
-    "WorkShop", "Salon Posgrado Decanato", "Pre-Clínica", "Microscopia",
-    "Aula A", "Aula B", "Aula C", "Aula D",
-    "Sala de Profesores Clinicas", "Sala de Profesores Decanato", "Consejo"
-];
-
-// === FUNCIONES PRINCIPALES ===
-
-lugaresRef.on('value', (snapshot) => {
-    lugaresData = snapshot.val() || {};
-    renderizarLugares();
-});
-
-historialLugaresRef.on('value', (snapshot) => {
-    const data = snapshot.val();
-    if (data) {
-        historialLugares = Object.values(data);
-        historialLugares.reverse();
-    } else {
-        historialLugares = [];
-    }
-    renderizarHistorial(historialLugares, 'log-list');
-});
-
-/**
- * Dibuja la tabla de lugares con el botón único.
- */
-function renderizarLugares() {
-    const placesList = document.getElementById('places-list');
-    placesList.innerHTML = '';
-    lugaresList.forEach(lugar => {
-        const estadoActual = lugaresData[lugar] || 'apagado';
-        const fila = document.createElement('tr');
-        const estadoClase = estadoActual === 'apagado' ? 'status-apagado' : 'status-encendido';
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Préstamos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Control de Disponibilidad</h1>
+        <nav class="top-nav">
+            <a href="index.html" class="nav-link active">Préstamos</a>
+            <a href="lugares.html" class="nav-link">Lugares</a>
+        </nav>
         
-        fila.innerHTML = `
-            <td data-label="Lugar">${lugar}</td>
-            <td data-label="Estado"><span class="status-badge ${estadoClase}">${estadoActual.charAt(0).toUpperCase() + estadoActual.slice(1)}</span></td>
-            <td data-label="Acciones">
-                <button 
-                    class="state-button ${estadoActual === 'apagado' ? 'apagado' : 'encendido'}" 
-                    onclick="cambiarEstado('${lugar}', '${estadoActual === 'apagado' ? 'encendido' : 'apagado'}')">
-                    ${estadoActual === 'apagado' ? 'Encender' : 'Apagar'}
-                </button>
-            </td>
-        `;
-        placesList.appendChild(fila);
-    });
-}
+        <section class="stock-section">
+            <table id="stock-table">
+                <thead>
+                    <tr>
+                        <th>Artículo</th>
+                        <th>Estado</th>
+                        <th>Lugar</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="equipos-list">
+                    </tbody>
+            </table>
+        </section>
 
-/**
- * Dibuja el historial de movimientos en la página.
- */
-function renderizarHistorial(historialData, elementId) {
-    const logList = document.getElementById(elementId);
-    logList.innerHTML = '';
-    historialData.slice(0, 20).forEach(log => {
-        const nuevoLog = document.createElement('li');
-        nuevoLog.innerText = log;
-        logList.appendChild(nuevoLog);
-    });
-}
+        <section class="log-section">
+            <ul id="log-list"></ul>
+        </section>
 
-function cambiarEstado(lugar, nuevoEstado) {
-    lugaresRef.child(lugar).set(nuevoEstado)
-        .then(() => {
-            const mensaje = `[${new Date().toLocaleString()}] Se cambió el estado de ${lugar} a ${nuevoEstado}.`;
-            historialLugaresRef.push(mensaje);
-        })
-        .catch(function(){});
-}
+        <div id="lugar-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-button" onclick="ocultarLugares()">&times;</span>
+                <h3>Selecciona el lugar para el préstamo</h3>
+                <div id="lugares-list">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
