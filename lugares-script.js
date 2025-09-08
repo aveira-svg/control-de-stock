@@ -9,24 +9,12 @@ const firebaseConfig = {
     appId: "1:960767851590:web:9acf5ff042cd54707a9e47",
     measurementId: "G-Y64R9QXZ4Z"
 };
-// avergas
+
 // === INICIALIZACIÓN DE FIREBASE ===
-try {
-    if (typeof firebase === 'undefined') {
-        throw new Error('Firebase no está disponible');
-    }
-    firebase.initializeApp(firebaseConfig);
-} catch (err) {
-    const logList = document.getElementById('log-list');
-    if (logList) {
-        const li = document.createElement('li');
-        li.textContent = 'Error inicializando Firebase: ' + (err && err.message ? err.message : err);
-        logList.prepend(li);
-    }
-}
-const database = firebase && firebase.database ? firebase.database() : null;
-const lugaresRef = database ? database.ref('lugares') : null;
-const historialLugaresRef = database ? database.ref('historial-lugares') : null;
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const lugaresRef = database.ref('lugares');
+const historialLugaresRef = database.ref('historial-lugares');
 
 // === VARIABLES DEL PROGRAMA ===
 let lugaresData = {};
@@ -41,19 +29,12 @@ const lugaresList = [
 
 // === FUNCIONES PRINCIPALES ===
 
-if (lugaresRef) lugaresRef.on('value', (snapshot) => {
+lugaresRef.on('value', (snapshot) => {
     lugaresData = snapshot.val() || {};
     renderizarLugares();
-}, function(error){
-    const logList = document.getElementById('log-list');
-    if (logList) {
-        const li = document.createElement('li');
-        li.textContent = 'Error leyendo lugares: ' + error.message;
-        logList.prepend(li);
-    }
 });
 
-if (historialLugaresRef) historialLugaresRef.on('value', (snapshot) => {
+historialLugaresRef.on('value', (snapshot) => {
     const data = snapshot.val();
     if (data) {
         historialLugares = Object.values(data);
@@ -62,13 +43,6 @@ if (historialLugaresRef) historialLugaresRef.on('value', (snapshot) => {
         historialLugares = [];
     }
     renderizarHistorial(historialLugares, 'log-list');
-}, function(error){
-    const logList = document.getElementById('log-list');
-    if (logList) {
-        const li = document.createElement('li');
-        li.textContent = 'Error leyendo historial: ' + error.message;
-        logList.prepend(li);
-    }
 });
 
 /**
@@ -80,14 +54,14 @@ function renderizarLugares() {
     lugaresList.forEach(lugar => {
         const estadoActual = lugaresData[lugar] || 'apagado';
         const fila = document.createElement('tr');
-        const estadoClase = estadoActual === 'apagado' ? 'apagado' : 'encendido';
+        const estadoClase = estadoActual === 'apagado' ? 'status-apagado' : 'status-encendido';
         
         fila.innerHTML = `
             <td data-label="Lugar">${lugar}</td>
-            <td data-label="Estado" class="${estadoClase}">${estadoActual.charAt(0).toUpperCase() + estadoActual.slice(1)}</td>
+            <td data-label="Estado"><span class="status-badge ${estadoClase}">${estadoActual.charAt(0).toUpperCase() + estadoActual.slice(1)}</span></td>
             <td data-label="Acciones">
                 <button 
-                    class="state-button ${estadoClase}" 
+                    class="state-button ${estadoActual === 'apagado' ? 'apagado' : 'encendido'}" 
                     onclick="cambiarEstado('${lugar}', '${estadoActual === 'apagado' ? 'encendido' : 'apagado'}')">
                     ${estadoActual === 'apagado' ? 'Encender' : 'Apagar'}
                 </button>
@@ -111,25 +85,10 @@ function renderizarHistorial(historialData, elementId) {
 }
 
 function cambiarEstado(lugar, nuevoEstado) {
-    if (!lugaresRef) return;
     lugaresRef.child(lugar).set(nuevoEstado)
         .then(() => {
             const mensaje = `[${new Date().toLocaleString()}] Se cambió el estado de ${lugar} a ${nuevoEstado}.`;
-            if (historialLugaresRef) historialLugaresRef.push(mensaje).catch(function(error){
-                const logList = document.getElementById('log-list');
-                if (logList) {
-                    const li = document.createElement('li');
-                    li.textContent = 'Error escribiendo historial: ' + error.message;
-                    logList.prepend(li);
-                }
-            });
+            historialLugaresRef.push(mensaje);
         })
-        .catch(function(error){
-            const logList = document.getElementById('log-list');
-            if (logList) {
-                const li = document.createElement('li');
-                li.textContent = 'Error al actualizar el estado: ' + error.message;
-                logList.prepend(li);
-            }
-        });
+        .catch(function(){});
 }
