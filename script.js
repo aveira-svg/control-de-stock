@@ -11,11 +11,23 @@ const firebaseConfig = {
 };
 
 // === INICIALIZACIÓN DE FIREBASE ===
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const equiposRef = database.ref('equipos');
+try {
+    if (typeof firebase === 'undefined') {
+        throw new Error('Firebase no está disponible');
+    }
+    firebase.initializeApp(firebaseConfig);
+} catch (err) {
+    const logList = document.getElementById('log-list');
+    if (logList) {
+        const li = document.createElement('li');
+        li.textContent = 'Error inicializando Firebase: ' + (err && err.message ? err.message : err);
+        logList.prepend(li);
+    }
+}
+const database = firebase && firebase.database ? firebase.database() : null;
+const equiposRef = database ? database.ref('equipos') : null;
 // NUEVO: Referencia para el historial de préstamos
-const historialPrestamosRef = database.ref('historial-prestamos');
+const historialPrestamosRef = database ? database.ref('historial-prestamos') : null;
 
 // === VARIABLES DEL PROGRAMA ===
 let equipos = [];
@@ -30,7 +42,7 @@ let historialPrestamos = [];
 
 // === FUNCIONES PRINCIPALES ===
 
-equiposRef.on('value', (snapshot) => {
+if (equiposRef) equiposRef.on('value', (snapshot) => {
     const data = snapshot.val();
     if (data) {
         equipos = data;
@@ -50,13 +62,28 @@ equiposRef.on('value', (snapshot) => {
             { id: 'cañon_01', nombre: 'Cañón 01', estado: 'disponible', lugar: null },
             { id: 'cañon_02', nombre: 'Cañón 02', estado: 'disponible', lugar: null },
         ];
-        equiposRef.set(equipos);
+        equiposRef.set(equipos).catch(function(error){
+            const logList = document.getElementById('log-list');
+            if (logList) {
+                const li = document.createElement('li');
+                li.textContent = 'Permiso denegado al escribir equipos: ' + error.message;
+                logList.prepend(li);
+            }
+        });
+    }
+    renderizarEquipos();
+}, function(error){
+    const logList = document.getElementById('log-list');
+    if (logList) {
+        const li = document.createElement('li');
+        li.textContent = 'Error leyendo equipos: ' + error.message;
+        logList.prepend(li);
     }
     renderizarEquipos();
 });
 
 // NUEVO: Escucha los cambios en el historial de préstamos
-historialPrestamosRef.on('value', (snapshot) => {
+if (historialPrestamosRef) historialPrestamosRef.on('value', (snapshot) => {
     const data = snapshot.val();
     if (data) {
         historialPrestamos = Object.values(data);
@@ -65,6 +92,13 @@ historialPrestamosRef.on('value', (snapshot) => {
         historialPrestamos = [];
     }
     renderizarHistorial(historialPrestamos, 'log-list');
+}, function(error){
+    const logList = document.getElementById('log-list');
+    if (logList) {
+        const li = document.createElement('li');
+        li.textContent = 'Error leyendo historial: ' + error.message;
+        logList.prepend(li);
+    }
 });
 
 function renderizarEquipos() {
@@ -124,9 +158,23 @@ function prestar(lugar) {
     if (equipoIndex !== -1 && equipos[equipoIndex].estado === 'disponible') {
         equipos[equipoIndex].estado = 'prestado';
         equipos[equipoIndex].lugar = lugar;
-        equiposRef.set(equipos);
+        equiposRef.set(equipos).catch(function(error){
+            const logList = document.getElementById('log-list');
+            if (logList) {
+                const li = document.createElement('li');
+                li.textContent = 'Error escribiendo equipos: ' + error.message;
+                logList.prepend(li);
+            }
+        });
         const mensaje = `[${new Date().toLocaleString()}] Se prestó ${equipos[equipoIndex].nombre} a ${lugar}.`;
-        historialPrestamosRef.push(mensaje); // Guarda en el historial de préstamos
+        if (historialPrestamosRef) historialPrestamosRef.push(mensaje).catch(function(error){
+            const logList = document.getElementById('log-list');
+            if (logList) {
+                const li = document.createElement('li');
+                li.textContent = 'Error escribiendo historial: ' + error.message;
+                logList.prepend(li);
+            }
+        }); // Guarda en el historial de préstamos
         ocultarLugares();
     }
 }
@@ -137,17 +185,22 @@ function devolver(equipoId) {
         const lugarAnterior = equipos[equipoIndex].lugar;
         equipos[equipoIndex].estado = 'disponible';
         equipos[equipoIndex].lugar = null;
-        equiposRef.set(equipos);
+        equiposRef.set(equipos).catch(function(error){
+            const logList = document.getElementById('log-list');
+            if (logList) {
+                const li = document.createElement('li');
+                li.textContent = 'Error escribiendo equipos: ' + error.message;
+                logList.prepend(li);
+            }
+        });
         const mensaje = `[${new Date().toLocaleString()}] Se devolvió ${equipos[equipoIndex].nombre} (prestado en ${lugarAnterior}).`;
-        historialPrestamosRef.push(mensaje); // Guarda en el historial de préstamos
+        if (historialPrestamosRef) historialPrestamosRef.push(mensaje).catch(function(error){
+            const logList = document.getElementById('log-list');
+            if (logList) {
+                const li = document.createElement('li');
+                li.textContent = 'Error escribiendo historial: ' + error.message;
+                logList.prepend(li);
+            }
+        }); // Guarda en el historial de préstamos
     }
 }
-
-
-
-
-
-
-
-
-
