@@ -156,7 +156,7 @@ ul li {
 
 #lugares-list { display:flex; gap:12px; margin-top:20px; }
 .lugar-col { flex:1; display:flex; flex-direction:column; gap:10px; }
-#lugares-list button { width:100%; padding:12px; background:#6b7280; color:#fff; border:none; border-radius:8px; cursor:pointer; }
+#lugares-list button { width:100%; padding:12px; background:#343a40; color:#ffffff; border:none; border-radius:8px; cursor:pointer; }
 #lugares-list button:hover { background:#4b5563; }
 
 /* Compatibilidad móvil */
@@ -321,8 +321,8 @@ ul li {
 
 /* --- NUEVO ESTILO PARA EL BOTÓN ÚNICO --- */
 .state-button { padding:8px 12px; border-radius:8px; border:1px solid #e5e7eb; background:#ffffff; cursor:pointer; }
-.state-button.encendido { background:#eef2ff; color:#1e3a8a; border-color:#c7d2fe; }
-.state-button.apagado { background:#fff7ed; color:#9a3412; border-color:#fed7aa; }
+.state-button.encendido { background:#343a40; color:#ffffff; border: none; }
+.state-button.apagado { background:#343a40; color:#ffffff; border: none; }
 
 .log-section {
     margin-top: 30px;
