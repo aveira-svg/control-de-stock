@@ -172,18 +172,19 @@ ul li {
     border-radius: 8px;
     border: none;
     cursor: pointer;
-    background-color: #343a40; /* Gris oscuro para estado apagado */
-    color: #ffffff; /* Texto blanco */
+    background-color: #e0e0e0; /* Gris claro para estado apagado */
+    color: #000000; /* Texto negro */
     font-weight: bold;
     transition: background-color 0.3s ease;
 }
 
 .state-button:hover {
-    background-color: #4b5563;
+    background-color: #cccccc;
 }
 
 .state-button.encendido {
-    background-color: #6c757d; /* Un gris un poco más claro para estado encendido */
+    background-color: #dc3545; /* Rojo para estado encendido */
+    color: #ffffff; /* Texto blanco */
 }
 
 /* Compatibilidad móvil */
