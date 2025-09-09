@@ -172,27 +172,19 @@ ul li {
     border-radius: 8px;
     border: none;
     cursor: pointer;
-    background-color: #6c757d; /* Gris medio para estado apagado */
-    color: #ffffff; /* Texto blanco */
+    background-color: #e0e0e0; /* Gris claro para estado apagado */
+    color: #000000; /* Texto negro */
     font-weight: bold;
-    transition: background-color 0.3s ease, box-shadow 0.15s ease, transform 0.08s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 -3px 0 rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
 }
 
 .state-button:hover {
-    background-color: #7b838a;
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15), inset 0 -3px 0 rgba(0, 0, 0, 0.2);
+    background-color: #cccccc;
 }
 
 .state-button.encendido {
-    background-color: #e0e0e0; /* Gris claro para estado encendido */
-    color: #dc3545; /* Rojo intenso */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 -3px 0 rgba(0, 0, 0, 0.2);
-}
-
-.state-button.encendido:hover {
-    background-color: #d0d0d0;
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15), inset 0 -3px 0 rgba(0, 0, 0, 0.2);
+    background-color: #dc3545; /* Rojo para estado encendido */
+    color: #ffffff; /* Texto blanco */
 }
 
 /* Compatibilidad móvil */
