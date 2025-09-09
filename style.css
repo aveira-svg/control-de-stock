@@ -159,6 +159,33 @@ ul li {
 #lugares-list button { width:100%; padding:12px; background:#6b7280; color:#fff; border:none; border-radius:8px; cursor:pointer; }
 #lugares-list button:hover { background:#4b5563; }
 
+/* Nuevos estilos para los botones de lugares.html */
+.menu-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.state-button {
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background-color: #343a40; /* Gris oscuro para estado apagado */
+    color: #ffffff; /* Texto blanco */
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.state-button:hover {
+    background-color: #4b5563;
+}
+
+.state-button.encendido {
+    background-color: #6c757d; /* Un gris un poco más claro para estado encendido */
+}
+
 /* Compatibilidad móvil */
 @media (max-width: 600px) {
     .container {

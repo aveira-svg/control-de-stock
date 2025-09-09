@@ -49,25 +49,15 @@ historialLugaresRef.on('value', (snapshot) => {
  * Dibuja la tabla de lugares con el botón único.
  */
 function renderizarLugares() {
-    const placesList = document.getElementById('places-list');
-    placesList.innerHTML = '';
+    const lugaresContainer = document.getElementById('lugares-container');
+    lugaresContainer.innerHTML = '';
     lugaresList.forEach(lugar => {
         const estadoActual = lugaresData[lugar] || 'apagado';
-        const fila = document.createElement('tr');
-        const estadoClase = estadoActual === 'apagado' ? 'status-apagado' : 'status-encendido';
-        
-        fila.innerHTML = `
-            <td data-label="Lugar">${lugar}</td>
-            <td data-label="Estado"><span class="status-badge ${estadoClase}">${estadoActual.charAt(0).toUpperCase() + estadoActual.slice(1)}</span></td>
-            <td data-label="Acciones">
-                <button 
-                    class="state-button ${estadoActual === 'apagado' ? 'apagado' : 'encendido'}" 
-                    onclick="cambiarEstado('${lugar}', '${estadoActual === 'apagado' ? 'encendido' : 'apagado'}')">
-                    ${estadoActual === 'apagado' ? 'Encender' : 'Apagar'}
-                </button>
-            </td>
-        `;
-        placesList.appendChild(fila);
+        const button = document.createElement('button');
+        button.classList.add('state-button', estadoActual);
+        button.textContent = lugar;
+        button.onclick = () => cambiarEstado(lugar, estadoActual === 'apagado' ? 'encendido' : 'apagado');
+        lugaresContainer.appendChild(button);
     });
 }
 
