@@ -1,13 +1,13 @@
 // === CONFIGURACIÓN DE FIREBASE (¡TU CÓDIGO!) ===
 const firebaseConfig = {
-    apiKey: "AIzaSyAljDO9kRa3QRWdA1BCuce6gmHzDS1_gOM",
-    authDomain: "control-de-prestamos-c10a3.firebaseapp.com",
-    databaseURL: "https://control-de-prestamos-c10a3-default-rtdb.firebaseio.com",
-    projectId: "control-de-prestamos-c10a3",
-    storageBucket: "control-de-prestamos-c10a3.firebasestorage.app",
-    messagingSenderId: "960767851590",
-    appId: "1:960767851590:web:9acf5ff042cd54707a9e47",
-    measurementId: "G-Y64R9QXZ4Z"
+    apiKey: "AIzaSyC6IrYM2eMdLCR-zGm5WjCGHBTgrTpWAyg",
+    authDomain: "control-de-prestamos-8c967.firebaseapp.com",
+    databaseURL: "https://control-de-prestamos-8c967-default-rtdb.firebaseio.com",
+    projectId: "control-de-prestamos-8c967",
+    storageBucket: "control-de-prestamos-8c967.firebasestorage.app",
+    messagingSenderId: "812227966868",
+    appId: "1:812227966868:web:34e19a163dc5031aafc181",
+    measurementId: "G-ZSQB6HV4RH"
 };
 
 // === INICIALIZACIÓN DE FIREBASE ===
