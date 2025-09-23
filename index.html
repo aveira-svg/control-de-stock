@@ -1,80 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Préstamos</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="container">
-        <a href="lugares.html" class="back-button">Gestionar Lugares</a>
-        <h1>Control de Préstamos</h1>
-
-        <section class="stock-section">
-            <h2>Equipos Disponibles</h2>
-            <table id="stock-table">
-                <thead>
-                    <tr>
-                        <th>Artículo</th>
-                        <th>Estado</th>
-                        <th>Lugar</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="equipos-list">
-                    </tbody>
-            </table>
-        </section>
-
-        <section class="log-section">
-            <h2>Registro de Préstamos y Devoluciones</h2>
-            <ul id="log-list"></ul>
-        </section>
-
-        <div id="lugar-modal" class="modal">
-            <div class="modal-content">
-                <span class="close-button" onclick="ocultarLugares()">&times;</span>
-                <h3>Selecciona el lugar para el préstamo</h3>
-                <div id="lugares-list">
-                    </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Captura errores generales para mostrarlos en la página (ayuda al diagnóstico en GitHub Pages)
-        (function(){
-            function appendLog(message){
-                try {
-                    var ul = document.getElementById('log-list');
-                    if (!ul) return;
-                    var li = document.createElement('li');
-                    li.textContent = message;
-                    ul.prepend(li);
-                } catch(_){}
-            }
-            window.addEventListener('error', function(e){
-                appendLog('Error JS: ' + (e && e.message ? e.message : 'desconocido'));
-            });
-            window.addEventListener('unhandledrejection', function(e){
-                appendLog('Promesa no manejada: ' + (e && e.reason ? (e.reason.message || String(e.reason)) : 'desconocida'));
-            });
-        })();
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script>
-        // Verificación rápida de Firebase cargado
-        if (typeof firebase === 'undefined') {
-            var ul = document.getElementById('log-list');
-            if (ul) {
-                var li = document.createElement('li');
-                li.textContent = 'Firebase no se cargó. Revisa la red/CSP.';
-                ul.prepend(li);
-            }
-        }
-    </script>
-    <script src="script.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Control de Préstamos | FO</title>
+  </head>
+  <body>
+    <div id="root" class="min-h-dvh"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

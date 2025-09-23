@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@theme {
+  --color-slate-900: #0f172a;
+  --color-slate-800: #1e293b;
+  --color-slate-100: #f1f5f9;
+  --color-slate-400: #94a3b8;
+  --color-blue-500: #3b82f6;
+  --color-emerald-500: #10b981;
+  --color-amber-500: #f59e0b;
+  --color-red-500: #ef4444;
+}
+
+html { color-scheme: light; }
+body { @apply bg-white text-slate-800 min-h-screen; }
+
+.card { @apply rounded-xl bg-white p-4 ring-1 ring-slate-300 text-slate-900 transition-all duration-300; box-shadow: 0 12px 34px -18px rgba(15,23,42,0.20), 0 6px 18px -10px rgba(15,23,42,0.10); }
+.card:hover { @apply ring-slate-400; box-shadow: 0 20px 48px -16px rgba(15,23,42,0.26), 0 10px 24px -12px rgba(15,23,42,0.12); }
+/* brillo eliminado para quitar efecto hielo */
+
+/* Glow rojo para tarjetas activas */
+.card--glow-red { box-shadow: 0 12px 34px -18px rgba(239,68,68,0.50), 0 0 0 1px rgba(239,68,68,0.22), 0 6px 18px -10px rgba(15,23,42,0.10); }
+.card--glow-red:hover { box-shadow: 0 18px 48px -16px rgba(239,68,68,0.60), 0 0 0 1px rgba(239,68,68,0.28), 0 10px 24px -12px rgba(15,23,42,0.12); }
+
+/* Botones estilo hielo (glass/ice) */
+.btn { @apply inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium text-slate-800 bg-white/50 ring-1 ring-white/70 shadow-sm backdrop-blur-md transition-all duration-200 hover:bg-white/70 active:scale-95; }
+.btn-secondary { @apply inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium text-slate-700 bg-slate-50/80 ring-1 ring-slate-200 shadow-sm backdrop-blur-md transition-all duration-200 hover:bg-slate-50 active:scale-95; }
+
+/* Botón primario azul */
+.btn-primary { @apply bg-blue-500/20 text-blue-700 ring-1 ring-blue-300 backdrop-blur-md hover:bg-blue-500/30 active:scale-95; }
+
+/* Botón efecto hielo rojo */
+.btn-ice-red { @apply bg-red-500/20 text-red-700 ring-1 ring-red-300 backdrop-blur-md hover:bg-red-500/30 active:scale-95; }
+
+/* Animaciones utilitarias */
+@keyframes fade-in { from { opacity: 0 } to { opacity: 1 } }
+@keyframes fade-in-up { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }
+.animate-fade { animation: fade-in 180ms ease-out both; }
+.animate-in { animation: fade-in-up 240ms ease-out both; }
